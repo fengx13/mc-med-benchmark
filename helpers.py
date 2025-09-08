@@ -350,12 +350,12 @@ def encode_chief_complaints(df_master, complaint_dict):
 
     for i, row in df_master.iterrows():
         curr_patient_complaint = str(row['chiefcomplaint'])
-        curr_patient_complaint_list = [False for _ in range(len(complaint_regex_list))]
+        curr_patient_complaint_list = [0 for _ in range(len(complaint_regex_list))]
         complaint_idx = 0
 
         for complaint in complaint_regex_list:
             if re.search(complaint, curr_patient_complaint, re.IGNORECASE):
-                curr_patient_complaint_list[complaint_idx] = True
+                curr_patient_complaint_list[complaint_idx] = 1
             complaint_idx += 1
         
         holder_list.append(curr_patient_complaint_list)
