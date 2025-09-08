@@ -1,2 +1,2 @@
 # mc-med-benchmark
-Python workflow for generating benchmark datasets and machine learning models from the MC-MED database. 
+Please download the original CSV from the PhysioNet website. Add to your own location and run.  
