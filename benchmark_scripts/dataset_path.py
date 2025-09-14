@@ -3,9 +3,9 @@
 
 # Data paths for all required CSV files
 # Don't commit this to github
-VISITS_PATH = '/Users/xinniemai/Desktop/mcmed_data/original_mcmed_csv/visits.csv'
-MEDS_PATH = '/Users/xinniemai/Desktop/mcmed_data/original_mcmed_csv/meds.csv'
-PMH_PATH = '/Users/xinniemai/Desktop/mcmed_data/original_mcmed_csv/pmh.csv'
-LABS_PATH = '/Users/xinniemai/Desktop/mcmed_data/original_mcmed_csv/labs.csv'
+VISITS_PATH = ''
+MEDS_PATH = ''
+PMH_PATH = ''
+LABS_PATH = ''
 
-output_path = '/Users/xinniemai/Desktop/mcmed_data/'
+output_path = ''
