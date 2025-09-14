@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
-from helpers import *
-from util import *
-from dataset_path import *
+from benchmark_scripts.helpers import *
+from benchmark_scripts.util import *
+from benchmark_scripts.dataset_path import *
 from mappers import *
-from disease_defs import DISEASE_DEFS
+from benchmark_scripts.disease_defs import DISEASE_DEFS
 
 df_visits = pd.read_csv(VISITS_PATH)
 df_meds = pd.read_csv(MEDS_PATH)
