@@ -24,10 +24,6 @@ patient_visit_columns = ['subject_id', 'stay_id',
                          'triage_MAP']
 df_master = pd.DataFrame(columns=patient_visit_columns)
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-pd.set_option('display.max_colwidth', None)
-
 
 basic_column_mapping = {
     'MRN': 'subject_id',
@@ -92,6 +88,8 @@ df_master['time_to_icu_transfer_hours'] = round(time_diff_to_icu.dt.total_second
 df_master['triage_acuity'] = df_visits['Triage_acuity'].str[0].replace('n', np.nan).astype('Int64')
 df_master['triage_MAP'] = round((df_master['triage_sbp'] + 2 * df_master['triage_dbp']) / 3, 1)
 
+print(f"demographics shape: ", df_master.shape)
+
 complaint_dict = {
     "chiefcom_chest_pain": "chest pain|tight chest|pressure chest|angina|retrosternal pain",
     "chiefcom_abdominal_pain": "abdominal pain|abd pain|stomach ache|belly pain|tummy ache",
@@ -107,6 +105,8 @@ complaint_dict = {
 
 df_master['CC'] = df_visits['CC']
 df_master = encode_chief_complaints(df_master, complaint_dict)
+
+print(f"chief complaints shape: ", df_master.shape)
 
 visits_history['Arrival_time'] = adjust_time_by_subtracting_year(visits_history['Arrival_time'])
 meds_history[['Start_date','End_date']] = meds_history[['Start_date','End_date']].apply(adjust_time_by_subtracting_year)
@@ -159,6 +159,8 @@ df_master = pd.merge(
     how='left'
 ).drop(columns=['MRN', 'CSN'])
 
+print(f"history shape: ", df_master.shape)
+
 add_triage_MAP(df_master)
 add_score_REMS(df_master)
 add_score_CART(df_master)
@@ -169,6 +171,8 @@ add_score_CCI(df_master)
 
 score_columns = ['stay_id', 'score_CCI', 'score_CART','score_REMS',  'score_NEWS', 'score_NEWS2', 'score_MEWS']
 final_score_columns = [col for col in score_columns if col in df_master.columns]
+
+print(f"final score columns shape: ", df_master.shape)
 
 df_labs_processed = df_labs.copy()
 test_column_name = 'Component_name'
@@ -190,7 +194,7 @@ df_labs_wide.columns.name = None
 
 df_master = merge_lab_data_with_visits(df_master, df_labs_wide)
 
-print(f"Final dataset shape: {df_master.shape}")
+print(f"lab data shape: ", df_master.shape)
 
 visits_history_copy = df_visits.copy()
 
@@ -292,6 +296,7 @@ visits_history_copy["outcome_ed_revisit_72h"] = ((visits_history_copy["Hours_to_
 visits_history_copy["outcome_ed_revisit_168h"] = ((visits_history_copy["Hours_to_next_visit"] < 168)).astype(int)
 visits_history_copy["outcome_ed_revisit_720h"] = ((visits_history_copy["Hours_to_next_visit"] < 720)).astype(int)
 
+
 outcome_cols_regular = [
     'outcome_sepsis',
     'outcome_copd_exac', 
@@ -366,7 +371,5 @@ for outcome_type in outcome_types:
 
     if ed_outcome in df_master.columns and three_day_outcome in df_master.columns:
         df_master[new_outcome] = (df_master[ed_outcome] + df_master[three_day_outcome]).astype(int)
-
+print(f"final dataset shape: ", df_master.shape)
 df_master.to_csv(os.path.join(output_path, 'master_dataset.csv'), index=False)
-
-
