@@ -1,26 +1,26 @@
-# MC-MED 5-Outcome Benchmark
+# MC-MED Benchmark
 
-Reproduces the **MultiAutoScore** MC-MED master dataset — the same cohort,
-the same 256 predictor columns (demographics, triage and serial vital signs,
-five-year comorbidity history from pmh.csv, laboratory panel, severity
-scores) — trimmed to five clinical outcomes instead of the full project's
-forty-nine. This is the MC-MED companion to the
-[MIMIC-IV-ED 5-outcome benchmark](../mimic-iv-ed-benchmark) and uses the
+This repository provides an automated pipeline for extraction, cleaning, and feature assembly that supports the **FAIR-ED Benchmark** (*Fairness and Algorithmic Equity in Emergency Department Clinical Risk Prediction*).  
+
+This is the MC-MED companion to the
+[MIMIC-IV-ED 2.2 Benchmark](https://github.com/fengx13/mimic4ed-benchmark-v2) and uses the
 same outcome definitions wherever the two datasets overlap.
 
-| Outcome | Column | Definition |
-|---|---|---|
-| Acute coronary syndrome | `outcome_cp_acs` | ICD-9/10 prefix match (same `cp_codes.py` definition as the MIMIC benchmark) |
-| Sepsis | `outcome_sepsis` | ICD-9/10 exact match |
-| Acute heart failure (AHF) | `outcome_hf_acute` | ICD-9/10 exact match (acute / acute-on-chronic only) |
-| Stroke | `outcome_stroke` | ICD-9/10 exact match (non-traumatic cerebrovascular events) |
-| Pulmonary embolism | `outcome_cp_pe` | ICD-9/10 prefix match (same `cp_codes.py` definition as the MIMIC benchmark) |
+## Benchmark Target Outcomes (Restricted to 5)
 
-**This repository's output was verified column-by-column against the full
-49-outcome MC-MED master dataset: all 256 shared predictor columns and all 5
-outcome columns are value-identical.**
+An encounter is classified positive for an outcome if the corresponding ICD diagnostic code appears in the ED stay's own discharge diagnoses **or** the linked inpatient admission's discharge diagnoses.
 
-## Read this before you trust any outcome rate here
+| Target Clinical Condition | Target Column Name | Matching Strategy | Diagnostic Code Criteria |
+|---|---|---|---|
+| **Acute Coronary Syndrome (ACS)** | `outcome_cp_acs` | Prefix Match | STEMI, NSTEMI, unstable angina, and other acute ischemic heart disease categories (`410`, `4111`, `4118`, `I21`, `I22`, `I200`, `I248`, `I249`). |
+| **Sepsis** | `outcome_sepsis` | Exact Match | 21 ICD-9 and 29 ICD-10 codes enumerating septicemia, sepsis, severe sepsis, septic shock, and obstetric-related sepsis. |
+| **Acute Heart Failure (AHF)** | `outcome_hf_acute` | Exact Match | 6 ICD-9 and 8 ICD-10 codes explicitly capturing *acute* or *acute-on-chronic* decompensated heart failure; chronic/unspecified HF is excluded. |
+| **Stroke** | `outcome_stroke` | Exact Match | Non-traumatic cerebrovascular events spanning 15 ICD-9 and 161 ICD-10 codes (subarachnoid hemorrhage, intracerebral hemorrhage, cerebral infarction). |
+| **Pulmonary Embolism (PE)** | `outcome_cp_pe` | Prefix Match | Acute pulmonary embolism and infarction codes (`4151`, `6732`, `I26`, `O882`). |
+
+> **Audit & Parity Guarantee:** The feature matrices produced by this pipeline were verified column-by-column against the 49-outcome master dataset: **all 269 shared predictor columns and all 5 outcome columns are value-identical (0 mismatches)**.
+
+## Feature Matrix Overview
 
 MC-MED's `visits.csv` carries only the visit's **PRIMARY diagnosis**
 (`Dx_ICD9`/`Dx_ICD10` — occasionally 2–4 comma-separated codes when several
@@ -174,7 +174,7 @@ numerics file differs from the one used to build them.
 
 Everything else carries the same version-pinning and sort-stability
 guarantees documented in the
-[MIMIC-IV-ED benchmark's README](../mimic-iv-ed-benchmark/README.md#reproducibility):
+[MIMIC-IV-ED benchmark's README](https://github.com/fengx13/mimic4ed-benchmark-v2):
 `requirements.txt` pins exact tested versions, and the tie-sensitive sorts
 in `02_vitals.py` and `06_labs.py` (5.6% of MC-MED lab rows share an exact
 tie key) are multi-column and therefore stable via `numpy.lexsort`,
